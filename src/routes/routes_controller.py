@@ -9,7 +9,6 @@ class ScreenAddNewItem(ft.UserControl):
 
         self.date_picker = ft.DatePicker(
             on_change=self.change_date,
-            on_dismiss=self.date_picker_dismissed,
             first_date=datetime.datetime(2023, 10, 1),
             last_date=datetime.datetime(2024, 10, 1),
         )
@@ -24,10 +23,8 @@ class ScreenAddNewItem(ft.UserControl):
         page.overlay.append(self.date_picker)
 
     def change_date(self, e):
+        # armazenar valores
         print(f"Date picker changed, value is {self.date_picker.value}")
-
-    def date_picker_dismissed(self, e):
-        print(f"Date picker dismissed, value is {self.date_picker.value}")
 
     def build(self):
         add_new_item_screen = ft.View(
