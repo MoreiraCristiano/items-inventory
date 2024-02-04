@@ -52,8 +52,6 @@ def main(page: ft.Page):
     page.window_height = 800
     page.window_resizable = False
     page.window_maximizable = False
-    # page.vertical_alignment = 'center'
-    # page.horizontal_alignment = 'center'
     page.title = "Routes Example"
 
     main_page = Main()

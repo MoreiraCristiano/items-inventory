@@ -32,10 +32,11 @@ class ScreenAddNewItem(ft.UserControl):
         self.page.update()
 
     def save_item(self, event):
+        # Checar e tratar itens vazios
         print(self.item.value)
         print(self.category.value)
         print(self.extra_info.value)
-        print(self.date_picker.value)
+        print(self.date_picker.value.date())
 
     def build(self):
         add_new_item_screen = ft.View(
@@ -68,12 +69,7 @@ class ScreenAddNewItem(ft.UserControl):
 
 def route_change(route, page, default_view):
     page.views.clear()
-    page.views.append(
-        ft.View(
-            "/",
-            [default_view],
-        )
-    )
+    page.views.append(ft.View("/", [default_view], vertical_alignment='center'))
 
     if page.route == "/add_new_item":
         screenAddNewItem = ScreenAddNewItem(page)
