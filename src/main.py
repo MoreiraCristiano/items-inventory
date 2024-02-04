@@ -43,6 +43,7 @@ class Main(ft.UserControl):
                 ),
             ],
         )
+
         return main_page
 
 
@@ -51,7 +52,7 @@ def main(page: ft.Page):
     page.window_height = 800
     page.window_resizable = False
     page.window_maximizable = False
-    page.vertical_alignment = 'center'
+    # page.vertical_alignment = 'center'
     # page.horizontal_alignment = 'center'
     page.title = "Routes Example"
 

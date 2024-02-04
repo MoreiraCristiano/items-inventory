@@ -7,6 +7,10 @@ class ScreenAddNewItem(ft.UserControl):
         super().__init__()
         self.page = page
 
+        self.item = ft.TextField(label='Item')
+        self.category = ft.TextField(label='Category')
+        self.extra_info = ft.TextField(label='Extra information')
+
         self.date_picker = ft.DatePicker(
             on_change=self.change_date,
             first_date=datetime.datetime(2023, 10, 1),
@@ -22,9 +26,16 @@ class ScreenAddNewItem(ft.UserControl):
 
         page.overlay.append(self.date_picker)
 
-    def change_date(self, e):
+    def change_date(self, event):
         # armazenar valores
-        print(f"Date picker changed, value is {self.date_picker.value}")
+        self.date_button.text = self.date_picker.value.date()
+        self.page.update()
+
+    def save_item(self, event):
+        print(self.item.value)
+        print(self.category.value)
+        print(self.extra_info.value)
+        print(self.date_picker.value)
 
     def build(self):
         add_new_item_screen = ft.View(
@@ -34,9 +45,9 @@ class ScreenAddNewItem(ft.UserControl):
                     title=ft.Text("Add new item"),
                     bgcolor='#1A1C1E',
                 ),
-                ft.TextField(label='Item'),
-                ft.TextField(label='Category'),
-                ft.TextField(label='Extra information'),
+                self.item,
+                self.category,
+                self.extra_info,
                 self.date_button,
                 ft.Row(
                     alignment='center',
@@ -44,7 +55,9 @@ class ScreenAddNewItem(ft.UserControl):
                         ft.ElevatedButton(
                             "Go Home", on_click=lambda _: self.page.go("/"), height=45
                         ),
-                        ft.ElevatedButton("Save", height=45),
+                        ft.ElevatedButton(
+                            "Save", height=45, on_click=lambda e: self.save_item(e)
+                        ),
                     ],
                 ),
             ],
