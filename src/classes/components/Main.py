@@ -18,6 +18,11 @@ class Main(UserControl):
         super().__init__()
 
     def build(self):
+        """
+        Description: Render main menu component
+        Parameters: Null
+        Return: A control component to render
+        """
         main_page = Column(
             horizontal_alignment='center',
             controls=[
