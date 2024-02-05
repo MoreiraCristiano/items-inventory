@@ -8,6 +8,11 @@ from flet import (
     MainAxisAlignment,
     TextButton,
     TextField,
+    DataCell,
+    DataColumn,
+    DataTable,
+    DataRow,
+    icons,
 )
 
 
@@ -32,6 +37,41 @@ class ScreenCategories(UserControl):
             actions_alignment=MainAxisAlignment.END,
             # on_dismiss=lambda e: print("Modal dialog dismissed!"),
         )
+
+        self.categories_table = DataTable(
+            width=700,
+            border_radius=10,
+            sort_column_index=0,
+            sort_ascending=True,
+            heading_row_height=70,
+            show_checkbox_column=True,
+            divider_thickness=0,
+            column_spacing=200,
+            columns=[DataColumn(Text("Category"))],
+        )
+
+    def generate_category_rows(self):
+        """
+        Description:
+        Parameters:
+        Return:
+        """
+
+        def change_select_state(event):
+            if event.control.selected:
+                event.control.selected = False
+            else:
+                event.control.selected = True
+
+            self.page.update()
+
+        for element in self.cats:
+            self.categories_table.rows.append(
+                DataRow(
+                    [DataCell(Text(element))],
+                    on_select_changed=lambda e: change_select_state(e),
+                ),
+            )
 
     def close_dlg(self, e):
         self.dlg_modal.open = False
@@ -63,6 +103,11 @@ class ScreenCategories(UserControl):
         Parameters:
         Return: Null
         """
+
+        # obter classes do banco de dados e preencher o array/tupla
+        self.cats = ['Food', 'Cleaning', 'Drinks', 'Roupa']
+        self.generate_category_rows()
+
         categories_screen = View(
             "/categories",
             [
@@ -72,6 +117,8 @@ class ScreenCategories(UserControl):
                 ),
                 ElevatedButton("Home", on_click=lambda _: self.page.go("/")),
                 ElevatedButton("New category", on_click=self.open_dlg_modal),
+                ElevatedButton('Delete', icon=icons.DELETE),
+                self.categories_table,
             ],
         )
 
