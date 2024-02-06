@@ -1,4 +1,5 @@
 from flet import (
+    ProgressRing,
     UserControl,
     TextField,
     DatePicker,
@@ -10,8 +11,7 @@ from flet import (
     ElevatedButton,
 )
 
-
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 from datetime import datetime
 from model.InventoryItem import InventoryItem
@@ -21,11 +21,15 @@ class ScreenAddNewItem(UserControl):
     def __init__(self, page, database_engine):
         super().__init__()
         self.page = page
-
         self.item = TextField(label='Item')
         self.category = TextField(label='Category')
         self.extra_info = TextField(label='Extra information')
-
+        self.btn_home = ElevatedButton(
+            "Go Home", on_click=lambda _: self.page.go("/"), height=45
+        )
+        self.btn_save = ElevatedButton(
+            "Save", height=45, on_click=lambda e: self.save_item(e)
+        )
         self.date_picker = DatePicker(
             on_change=self.change_date,
             first_date=datetime(2023, 10, 1),
@@ -41,8 +45,27 @@ class ScreenAddNewItem(UserControl):
         self.engine = database_engine
         page.overlay.append(self.date_picker)
 
+    def set_controls_visibility(self, switch):
+        """
+        Description:
+        Parameters:
+        Return:
+        """
+        self.btn_save.disabled = switch
+        self.btn_home.disabled = switch
+        self.item.disabled = switch
+        self.category.disabled = switch
+        self.extra_info.disabled = switch
+        self.date_button.disabled = switch
+
+        self.page.update()
+
     def change_date(self, event):
-        # armazenar valores
+        """
+        Description:
+        Parameters:
+        Return:
+        """
         self.date_button.text = self.date_picker.value.date()
         self.page.update()
 
@@ -54,12 +77,15 @@ class ScreenAddNewItem(UserControl):
         """
         try:
             with Session(self.engine) as session:
+
                 new_item = InventoryItem(
                     item_name=self.item.value,
                     category=self.category.value,
                     expiration_date=self.date_picker.value.date(),
                     additional_info=self.extra_info.value,
                 )
+
+                self.set_controls_visibility(True)
                 session.expire_on_commit = False
                 session.add(new_item)
                 session.commit()
@@ -67,9 +93,12 @@ class ScreenAddNewItem(UserControl):
                 self.item.value = ''
                 self.category.value = ''
                 self.extra_info.value = ''
-                self.page.update()
-        except Exception:
+
+                self.set_controls_visibility(False)
+
+        except Exception as e:
             print('Algum erro ao inserir novo item. TRATAR')
+            print(e)
 
     def build(self):
         """
@@ -77,6 +106,10 @@ class ScreenAddNewItem(UserControl):
         Parameters:
         Return:
         """
+        # with Session(self.engine) as session:
+        #     stmt = select(InventoryItem)
+        #     InventoryItems = list(session.scalars(stmt))
+        #     print(InventoryItems)
         add_new_item_screen = View(
             "/add_new_item",
             [
@@ -90,14 +123,7 @@ class ScreenAddNewItem(UserControl):
                 self.date_button,
                 Row(
                     alignment='center',
-                    controls=[
-                        ElevatedButton(
-                            "Go Home", on_click=lambda _: self.page.go("/"), height=45
-                        ),
-                        ElevatedButton(
-                            "Save", height=45, on_click=lambda e: self.save_item(e)
-                        ),
-                    ],
+                    controls=[self.btn_home, self.btn_save],
                 ),
             ],
         )
