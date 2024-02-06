@@ -45,7 +45,7 @@ class ScreenAddNewItem(UserControl):
         self.engine = database_engine
         page.overlay.append(self.date_picker)
 
-    def set_controls_visibility(self, switch):
+    def set_controls_disable(self, switch):
         """
         Description:
         Parameters:
@@ -85,7 +85,8 @@ class ScreenAddNewItem(UserControl):
                     additional_info=self.extra_info.value,
                 )
 
-                self.set_controls_visibility(True)
+                self.set_controls_disable(True)
+
                 session.expire_on_commit = False
                 session.add(new_item)
                 session.commit()
@@ -94,9 +95,10 @@ class ScreenAddNewItem(UserControl):
                 self.category.value = ''
                 self.extra_info.value = ''
 
-                self.set_controls_visibility(False)
+                self.set_controls_disable(False)
 
         except Exception as e:
+            self.set_controls_disable(False)
             print('Algum erro ao inserir novo item. TRATAR')
             print(e)
 
