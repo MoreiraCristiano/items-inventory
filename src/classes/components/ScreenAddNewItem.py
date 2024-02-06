@@ -10,11 +10,15 @@ from flet import (
     ElevatedButton,
 )
 
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 from datetime import datetime
+from model.InventoryItem import InventoryItem
 
 
 class ScreenAddNewItem(UserControl):
-    def __init__(self, page):
+    def __init__(self, page, database_engine):
         super().__init__()
         self.page = page
 
@@ -34,7 +38,7 @@ class ScreenAddNewItem(UserControl):
             on_click=lambda _: self.date_picker.pick_date(),
             height=50,
         )
-
+        self.engine = database_engine
         page.overlay.append(self.date_picker)
 
     def change_date(self, event):
@@ -43,13 +47,36 @@ class ScreenAddNewItem(UserControl):
         self.page.update()
 
     def save_item(self, event):
-        # Checar e tratar itens vazios
-        print(self.item.value)
-        print(self.category.value)
-        print(self.extra_info.value)
-        print(self.date_picker.value.date())
+        """
+        Description:
+        Parameters:
+        Return:
+        """
+        try:
+            with Session(self.engine) as session:
+                new_item = InventoryItem(
+                    item_name=self.item.value,
+                    category=self.category.value,
+                    expiration_date=self.date_picker.value.date(),
+                    additional_info=self.extra_info.value,
+                )
+                session.expire_on_commit = False
+                session.add(new_item)
+                session.commit()
+
+                self.item.value = ''
+                self.category.value = ''
+                self.extra_info.value = ''
+                self.page.update()
+        except Exception:
+            print('Algum erro ao inserir novo item. TRATAR')
 
     def build(self):
+        """
+        Description:
+        Parameters:
+        Return:
+        """
         add_new_item_screen = View(
             "/add_new_item",
             [

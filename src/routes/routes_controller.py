@@ -3,7 +3,7 @@ from classes.components.ScreenAddNewItem import ScreenAddNewItem
 from classes.components.ScreenCategories import ScreenCategories
 
 
-def route_change(route, page, default_view):
+def route_change(route, page, default_view, database_engine):
     """
     Description: Navigate between configured routes
     Parameters: route: callback | page: app page to handle | default_view: The control for route '/'
@@ -13,7 +13,7 @@ def route_change(route, page, default_view):
     page.views.append(ft.View("/", [default_view], vertical_alignment='center'))
 
     if page.route == "/add_new_item":
-        screenAddNewItem = ScreenAddNewItem(page)
+        screenAddNewItem = ScreenAddNewItem(page, database_engine)
         page.views.append(screenAddNewItem.build())
 
     if page.route == "/categories":

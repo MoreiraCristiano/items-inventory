@@ -2,6 +2,13 @@ import flet as ft
 
 from routes.routes_controller import route_change, view_pop
 from classes.components.Main import Main
+from model.InventoryItem import Base
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+
+
+engine = create_engine('sqlite:///inventory.sqlite3', echo=False)
+Base.metadata.create_all(engine)
 
 
 def main(page: ft.Page):
@@ -13,7 +20,7 @@ def main(page: ft.Page):
 
     main_page = Main()
 
-    page.on_route_change = lambda r: route_change(r, page, main_page)
+    page.on_route_change = lambda r: route_change(r, page, main_page, engine)
     page.on_view_pop = lambda v: view_pop(v, page)
     page.go(page.route)
 
