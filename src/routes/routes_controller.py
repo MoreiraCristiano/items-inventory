@@ -17,7 +17,7 @@ def route_change(route, page, default_view, database_engine):
         page.views.append(screenAddNewItem.build())
 
     if page.route == "/categories":
-        screen_categories = ScreenCategories(page)
+        screen_categories = ScreenCategories(page, database_engine)
         page.views.append(screen_categories.build())
 
     if page.route == "/my_items":

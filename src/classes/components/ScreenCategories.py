@@ -1,4 +1,8 @@
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from model.InventoryItem import InventoryItem
 from flet import (
+    ListView,
     UserControl,
     View,
     AppBar,
@@ -17,27 +21,14 @@ from flet import (
 
 
 class ScreenCategories(UserControl):
-    def __init__(self, page):
+    def __init__(self, page, database_engine):
         super().__init__()
         self.page = page
+        self.engine = database_engine
+
+        self.categories = []
+        self.get_distinct_categories()
         self.category = TextField()
-
-        self.dlg = AlertDialog(
-            title=Text("Hello, you!"), on_dismiss=lambda e: print("Dialog dismissed!")
-        )
-
-        self.dlg_modal = AlertDialog(
-            modal=True,
-            title=Text("New category"),
-            content=self.category,
-            actions=[
-                TextButton("Confirm", on_click=lambda e: self.save_category(e)),
-                TextButton("Cancel", on_click=lambda e: self.close_dlg(e)),
-            ],
-            actions_alignment=MainAxisAlignment.END,
-            # on_dismiss=lambda e: print("Modal dialog dismissed!"),
-        )
-
         self.categories_table = DataTable(
             width=700,
             border_radius=10,
@@ -48,6 +39,22 @@ class ScreenCategories(UserControl):
             divider_thickness=0,
             column_spacing=200,
             columns=[DataColumn(Text("Category"))],
+        )
+        self.list_view = ListView(expand=1, spacing=10, padding=20)
+        self.list_view.controls.append(self.categories_table)
+
+        self.dlg = AlertDialog(
+            title=Text("Hello, you!"), on_dismiss=lambda e: print("Dialog dismissed!")
+        )
+        self.dlg_modal = AlertDialog(
+            modal=True,
+            title=Text("New category"),
+            content=self.category,
+            actions=[
+                TextButton("Confirm", on_click=lambda e: self.save_category(e)),
+                TextButton("Cancel", on_click=lambda e: self.close_dlg(e)),
+            ],
+            actions_alignment=MainAxisAlignment.END,
         )
 
     def generate_category_rows(self):
@@ -107,7 +114,13 @@ class ScreenCategories(UserControl):
         print(self.category.value)
         self.category.value = ''
 
-    def get_distinct_categories(self): ...
+    def get_distinct_categories(self):
+        with Session(self.engine) as session:
+            try:
+                stmt = select(InventoryItem.category)
+                self.categories = list(session.scalars(stmt))
+            except Exception as e:
+                print(e)
 
     def build(self):
         """
@@ -115,9 +128,6 @@ class ScreenCategories(UserControl):
         Parameters:
         Return: Null
         """
-
-        # obter classes do banco de dados e preencher o array/tupla
-        self.categories = ['Food', 'Cleaning', 'Drinks', 'Roupa']
         self.generate_category_rows()
 
         categories_screen = View(
@@ -130,7 +140,7 @@ class ScreenCategories(UserControl):
                 ElevatedButton("Home", on_click=lambda _: self.page.go("/")),
                 ElevatedButton("New category", on_click=self.open_dlg_modal),
                 ElevatedButton('Delete', icon=icons.DELETE),
-                self.categories_table,
+                self.list_view,
             ],
         )
 

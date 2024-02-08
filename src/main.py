@@ -17,8 +17,9 @@ def main(page: ft.Page):
     page.window_resizable = False
     page.window_maximizable = False
     page.title = "Routes Example"
-
     main_page = Main()
+
+    page.update()
 
     page.on_route_change = lambda r: route_change(r, page, main_page, engine)
     page.on_view_pop = lambda v: view_pop(v, page)
