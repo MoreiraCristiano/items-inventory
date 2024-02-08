@@ -47,9 +47,9 @@ class ScreenAddNewItem(UserControl):
 
     def set_controls_disable(self, switch):
         """
-        Description:
-        Parameters:
-        Return:
+        Description: Disable controls of the screen
+        Parameters: switch: boolean, True to hide, False to show
+        Return: Null
         """
         self.btn_save.disabled = switch
         self.btn_home.disabled = switch
@@ -62,9 +62,9 @@ class ScreenAddNewItem(UserControl):
 
     def change_date(self, event):
         """
-        Description:
-        Parameters:
-        Return:
+        Description: Change value of the button used to set the data, to selected data
+        Parameters: event: button click
+        Return: Null
         """
         self.date_button.text = self.date_picker.value.date()
         self.page.update()
@@ -104,14 +104,10 @@ class ScreenAddNewItem(UserControl):
 
     def build(self):
         """
-        Description:
-        Parameters:
-        Return:
+        Description: Build main view
+        Parameters: Null
+        Return: Null
         """
-        # with Session(self.engine) as session:
-        #     stmt = select(InventoryItem)
-        #     InventoryItems = list(session.scalars(stmt))
-        #     print(InventoryItems)
         add_new_item_screen = View(
             "/add_new_item",
             [
