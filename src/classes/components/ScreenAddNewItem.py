@@ -1,5 +1,4 @@
 from flet import (
-    ProgressRing,
     UserControl,
     TextField,
     DatePicker,
@@ -11,7 +10,7 @@ from flet import (
     ElevatedButton,
 )
 
-from sqlalchemy import create_engine, select
+
 from sqlalchemy.orm import Session
 from datetime import datetime
 from model.InventoryItem import InventoryItem

@@ -52,9 +52,9 @@ class ScreenCategories(UserControl):
 
     def generate_category_rows(self):
         """
-        Description:
-        Parameters:
-        Return:
+        Description: Use a list of categories to render a datatable with checkboxes
+        Parameters: Null
+        Return: Null
         """
 
         def change_select_state(event):
@@ -65,7 +65,7 @@ class ScreenCategories(UserControl):
 
             self.page.update()
 
-        for element in self.cats:
+        for element in self.categories:
             self.categories_table.rows.append(
                 DataRow(
                     [DataCell(Text(element))],
@@ -74,6 +74,11 @@ class ScreenCategories(UserControl):
             )
 
     def close_dlg(self, e):
+        """
+        Description: Close dialog modal
+        Parameters: event: mouse click event
+        Return: Null
+        """
         self.dlg_modal.open = False
         self.page.update()
 
@@ -83,6 +88,11 @@ class ScreenCategories(UserControl):
         self.page.update()
 
     def open_dlg_modal(self, e):
+        """
+        Description: Launch a modal to set the name of the category
+        Parameters: event: mouse click event
+        Return: Null
+        """
         self.page.dialog = self.dlg_modal
         self.dlg_modal.open = True
         self.page.update()
@@ -97,15 +107,17 @@ class ScreenCategories(UserControl):
         print(self.category.value)
         self.category.value = ''
 
+    def get_distinct_categories(self): ...
+
     def build(self):
         """
-        Description:
+        Description: Build main screen after query all categories from database
         Parameters:
         Return: Null
         """
 
         # obter classes do banco de dados e preencher o array/tupla
-        self.cats = ['Food', 'Cleaning', 'Drinks', 'Roupa']
+        self.categories = ['Food', 'Cleaning', 'Drinks', 'Roupa']
         self.generate_category_rows()
 
         categories_screen = View(
