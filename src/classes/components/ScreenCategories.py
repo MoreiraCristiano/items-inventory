@@ -1,6 +1,5 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from model.InventoryItem import InventoryItem
 from model.InventoryItem import Category
 from flet import (
     ListView,
@@ -57,10 +56,10 @@ class ScreenCategories(UserControl):
             actions_alignment=MainAxisAlignment.END,
         )
 
-    def change_select_state(self, event):
+    def change_checkbox_state(self, event):
         """
-        Description:
-        Parameters: Null
+        Description: Change the checkbox selection
+        Parameters: event: mouse click event
         Return: Null
         """
         if event.control.selected:
@@ -81,7 +80,7 @@ class ScreenCategories(UserControl):
             self.categories_table.rows.append(
                 DataRow(
                     [DataCell(Text(element))],
-                    on_select_changed=lambda e: self.change_select_state(e),
+                    on_select_changed=lambda e: self.change_checkbox_state(e),
                 ),
             )
 
@@ -126,7 +125,7 @@ class ScreenCategories(UserControl):
                 self.categories_table.rows.append(
                     DataRow(
                         [DataCell(Text(self.category.value))],
-                        on_select_changed=lambda e: self.change_select_state(e),
+                        on_select_changed=lambda e: self.change_checkbox_state(e),
                     )
                 )
 
@@ -139,8 +138,8 @@ class ScreenCategories(UserControl):
 
     def get_distinct_categories(self):
         """
-        Description:
-        Parameters:
+        Description: Get from database all the distinct categories
+        Parameters: Null
         Return: List of categories | None
         """
         with Session(self.engine) as session:
