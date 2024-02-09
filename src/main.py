@@ -4,7 +4,6 @@ from routes.routes_controller import route_change, view_pop
 from classes.components.Main import Main
 from model.InventoryItem import Base
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 
 
 engine = create_engine('sqlite:///inventory.sqlite3', echo=False)

@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from model.InventoryItem import InventoryItem
+from model.InventoryItem import Category
 from flet import (
     ListView,
     UserControl,
@@ -26,9 +27,8 @@ class ScreenCategories(UserControl):
         self.page = page
         self.engine = database_engine
 
-        self.categories = []
-        self.get_distinct_categories()
-        self.category = TextField()
+        self.categories = self.get_distinct_categories()
+        self.category = TextField(autofocus=True)
         self.categories_table = DataTable(
             width=700,
             border_radius=10,
@@ -57,6 +57,19 @@ class ScreenCategories(UserControl):
             actions_alignment=MainAxisAlignment.END,
         )
 
+    def change_select_state(self, event):
+        """
+        Description:
+        Parameters: Null
+        Return: Null
+        """
+        if event.control.selected:
+            event.control.selected = False
+        else:
+            event.control.selected = True
+
+        self.page.update()
+
     def generate_category_rows(self):
         """
         Description: Use a list of categories to render a datatable with checkboxes
@@ -64,19 +77,11 @@ class ScreenCategories(UserControl):
         Return: Null
         """
 
-        def change_select_state(event):
-            if event.control.selected:
-                event.control.selected = False
-            else:
-                event.control.selected = True
-
-            self.page.update()
-
         for element in self.categories:
             self.categories_table.rows.append(
                 DataRow(
                     [DataCell(Text(element))],
-                    on_select_changed=lambda e: change_select_state(e),
+                    on_select_changed=lambda e: self.change_select_state(e),
                 ),
             )
 
@@ -110,15 +115,39 @@ class ScreenCategories(UserControl):
         Parameters: event: mouse click event
         Return: Null
         """
-        self.close_dlg(event)
-        print(self.category.value)
-        self.category.value = ''
-
-    def get_distinct_categories(self):
         with Session(self.engine) as session:
             try:
-                stmt = select(InventoryItem.category)
-                self.categories = list(session.scalars(stmt))
+                category = Category(category=self.category.value)
+
+                session.expire_on_commit = False
+                session.add(category)
+                session.commit()
+
+                self.categories_table.rows.append(
+                    DataRow(
+                        [DataCell(Text(self.category.value))],
+                        on_select_changed=lambda e: self.change_select_state(e),
+                    )
+                )
+
+                self.close_dlg(event)
+                self.category.value = ''
+
+                self.page.update()
+            except Exception:
+                print('Falha ao criar categoria, tratar')
+
+    def get_distinct_categories(self):
+        """
+        Description:
+        Parameters:
+        Return: List of categories | None
+        """
+        with Session(self.engine) as session:
+            try:
+                stmt = select(Category.category)
+                categories = list(session.scalars(stmt))
+                return categories
             except Exception as e:
                 print(e)
 
