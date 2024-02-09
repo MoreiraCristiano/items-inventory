@@ -51,7 +51,10 @@ class ScreenCategories(UserControl):
             content=self.category,
             actions=[
                 TextButton('Confirm', on_click=lambda e: self.save_category(e)),
-                TextButton('Cancel', on_click=lambda e: self.close_dlg(e)),
+                TextButton(
+                    'Cancel',
+                    on_click=lambda e: self.close_dlg(e, self.dlg_modal_new_category),
+                ),
             ],
             actions_alignment=MainAxisAlignment.END,
         )
@@ -59,10 +62,15 @@ class ScreenCategories(UserControl):
         self.dlg_modal_delete_category = AlertDialog(
             modal=True,
             title=Text('Delete category(s)'),
-            content=Text('blabla'),
+            content=Text('Delete selected categories?'),
             actions=[
-                TextButton('Confirm'),
-                TextButton('Cancel', on_click=lambda e: self.close_dlg(e)),
+                TextButton('Confirm', on_click=lambda e: self.delete_category(e)),
+                TextButton(
+                    'Cancel',
+                    on_click=lambda e: self.close_dlg(
+                        e, self.dlg_modal_delete_category
+                    ),
+                ),
             ],
             actions_alignment=MainAxisAlignment.END,
         )
@@ -95,13 +103,13 @@ class ScreenCategories(UserControl):
                 ),
             )
 
-    def close_dlg(self, e):
+    def close_dlg(self, e, modal):
         '''
         Description: Close dialog modal
         Parameters: event: mouse click event
         Return: Null
         '''
-        self.dlg_modal_new_category.open = False
+        modal.open = False
         self.page.update()
 
     def open_dlg(self, e):
@@ -132,7 +140,7 @@ class ScreenCategories(UserControl):
                 session.expire_on_commit = False
                 session.add(category)
                 session.commit()
-
+                # Ainda nao é a melhor solucao pois se falhar, ainda vai ter adicionado ao db
                 self.categories_table.rows.append(
                     DataRow(
                         [DataCell(Text(self.category.value))],
@@ -140,11 +148,12 @@ class ScreenCategories(UserControl):
                     )
                 )
 
-                self.close_dlg(event)
+                self.close_dlg(event, self.dlg_modal_new_category)
                 self.category.value = ''
 
                 self.page.update()
-            except Exception:
+            except Exception as e:
+                print(e)
                 print('Falha ao criar categoria, tratar')
 
     def get_distinct_categories(self):
@@ -161,14 +170,13 @@ class ScreenCategories(UserControl):
             except Exception as e:
                 print(e)
 
-    def delete_category(self, category):
+    def delete_category(self, event):
 
-        # Abrir modal quando clicar no botao delete
         # Obter os valores da data table que estiverem selecionados
         # Modal: Deletar selecionados ? Yes / No
         # If yes delete the selected
         # dlg_modal_delete_category
-        pass
+        print('deletando as categorias selecionadas . . .')
 
     def build(self):
         '''
@@ -192,7 +200,13 @@ class ScreenCategories(UserControl):
                         e, self.dlg_modal_new_category
                     ),
                 ),
-                ElevatedButton('Delete', icon=icons.DELETE),
+                ElevatedButton(
+                    'Delete',
+                    icon=icons.DELETE,
+                    on_click=lambda e: self.open_dlg_modal(
+                        e, self.dlg_modal_delete_category
+                    ),
+                ),
                 self.list_view,
             ],
         )
