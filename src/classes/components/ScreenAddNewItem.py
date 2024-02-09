@@ -24,10 +24,10 @@ class ScreenAddNewItem(UserControl):
         self.category = TextField(label='Category')
         self.extra_info = TextField(label='Extra information')
         self.btn_home = ElevatedButton(
-            "Go Home", on_click=lambda _: self.page.go("/"), height=45
+            'Go Home', on_click=lambda _: self.page.go('/'), height=45
         )
         self.btn_save = ElevatedButton(
-            "Save", height=45, on_click=lambda e: self.save_item(e)
+            'Save', height=45, on_click=lambda e: self.save_item(e)
         )
         self.date_picker = DatePicker(
             on_change=self.change_date,
@@ -36,7 +36,7 @@ class ScreenAddNewItem(UserControl):
         )
 
         self.date_button = ElevatedButton(
-            "Expiration date",
+            'Expiration date',
             icon=icons.CALENDAR_MONTH,
             on_click=lambda _: self.date_picker.pick_date(),
             height=50,
@@ -45,11 +45,11 @@ class ScreenAddNewItem(UserControl):
         page.overlay.append(self.date_picker)
 
     def set_controls_disable(self, switch):
-        """
+        '''
         Description: Disable controls of the screen
         Parameters: switch: boolean, True to hide, False to show
         Return: Null
-        """
+        '''
         self.btn_save.disabled = switch
         self.btn_home.disabled = switch
         self.item.disabled = switch
@@ -60,20 +60,20 @@ class ScreenAddNewItem(UserControl):
         self.page.update()
 
     def change_date(self, event):
-        """
+        '''
         Description: Change value of the button used to set the data, to selected data
         Parameters: event: button click
         Return: Null
-        """
+        '''
         self.date_button.text = self.date_picker.value.date()
         self.page.update()
 
     def save_item(self, event):
-        """
+        '''
         Description:
         Parameters:
         Return:
-        """
+        '''
         try:
             with Session(self.engine) as session:
 
@@ -102,16 +102,16 @@ class ScreenAddNewItem(UserControl):
             print(e)
 
     def build(self):
-        """
+        '''
         Description: Build main view
         Parameters: Null
         Return: Null
-        """
+        '''
         add_new_item_screen = View(
-            "/add_new_item",
+            '/add_new_item',
             [
                 AppBar(
-                    title=Text("Add new item"),
+                    title=Text('Add new item'),
                     bgcolor='#1A1C1E',
                 ),
                 self.item,

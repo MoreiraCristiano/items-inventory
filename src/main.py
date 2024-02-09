@@ -15,7 +15,7 @@ def main(page: ft.Page):
     page.window_height = 800
     page.window_resizable = False
     page.window_maximizable = False
-    page.title = "Routes Example"
+    page.title = 'Routes Example'
     main_page = Main()
 
     page.update()

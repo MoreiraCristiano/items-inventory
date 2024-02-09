@@ -18,11 +18,11 @@ class Main(UserControl):
         super().__init__()
 
     def build(self):
-        """
+        '''
         Description: Render main menu component
         Parameters: Null
         Return: A control component to render
-        """
+        '''
         main_page = Column(
             horizontal_alignment='center',
             controls=[
@@ -36,19 +36,19 @@ class Main(UserControl):
                             'Add new item',
                             width=BUTTONS_WIDTH,
                             height=BUTTONS_HEIGHT,
-                            on_click=lambda e: e.page.go("/add_new_item"),
+                            on_click=lambda e: e.page.go('/add_new_item'),
                         ),
                         ElevatedButton(
                             'My items',
                             width=BUTTONS_WIDTH,
                             height=BUTTONS_HEIGHT,
-                            on_click=lambda e: e.page.go("/my_items"),
+                            on_click=lambda e: e.page.go('/my_items'),
                         ),
                         ElevatedButton(
                             'Categories',
                             width=BUTTONS_WIDTH,
                             height=BUTTONS_HEIGHT,
-                            on_click=lambda e: e.page.go("/categories"),
+                            on_click=lambda e: e.page.go('/categories'),
                         ),
                     ],
                 ),
