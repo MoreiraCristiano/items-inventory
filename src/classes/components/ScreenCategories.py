@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.orm import Session
 from model.InventoryItem import Category
 from flet import (
@@ -177,6 +177,23 @@ class ScreenCategories(UserControl):
         # If yes delete the selected
         # dlg_modal_delete_category
         print('deletando as categorias selecionadas . . .')
+
+        categories = ['teste', 'teste2', 'teste3']
+
+        try:
+            with Session(self.engine) as session:
+                for category in categories:
+                    stmt = delete(Category).where(Category.category == category)
+                    session.execute(stmt)
+
+                session.expire_on_commit = False
+                session.commit()
+        except Exception as e:
+            print(e)
+            print('Erro ao deletar')
+
+        # PRECISO ENCONTRAR UM MEIO EFICAZ DE RE-RENDER A TABLE DATA PARA USAR AQUI E NA CRIACAO DE NOVAS CAT
+        self.page.update()
 
     def build(self):
         '''
