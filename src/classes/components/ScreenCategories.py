@@ -127,6 +127,17 @@ class ScreenCategories(UserControl):
         modal.open = True
         self.page.update()
 
+    def update_category_table_values(self):
+        categories_from_db = self.get_distinct_categories()
+        self.categories_table.rows = []
+        for category in categories_from_db:
+            row = DataRow(
+                [DataCell(Text(category))],
+                on_select_changed=lambda e: self.change_checkbox_state(e),
+            )
+            self.categories_table.rows.append(row)
+        self.page.update()
+
     def save_category(self, event):
         '''
         Description: Use the category value and save a new category to the database
@@ -140,18 +151,12 @@ class ScreenCategories(UserControl):
                 session.expire_on_commit = False
                 session.add(category)
                 session.commit()
-                # Ainda nao é a melhor solucao pois se falhar, ainda vai ter adicionado ao db
-                self.categories_table.rows.append(
-                    DataRow(
-                        [DataCell(Text(self.category.value))],
-                        on_select_changed=lambda e: self.change_checkbox_state(e),
-                    )
-                )
 
                 self.close_dlg(event, self.dlg_modal_new_category)
                 self.category.value = ''
 
-                self.page.update()
+                self.update_category_table_values()
+
             except Exception as e:
                 print(e)
                 print('Falha ao criar categoria, tratar')
@@ -182,17 +187,20 @@ class ScreenCategories(UserControl):
 
         try:
             with Session(self.engine) as session:
+                session.expire_on_commit = False
+
                 for category in categories:
                     stmt = delete(Category).where(Category.category == category)
                     session.execute(stmt)
 
-                session.expire_on_commit = False
                 session.commit()
+
+                self.close_dlg(event, self.dlg_modal_delete_category)
+                self.update_category_table_values()
         except Exception as e:
             print(e)
             print('Erro ao deletar')
 
-        # PRECISO ENCONTRAR UM MEIO EFICAZ DE RE-RENDER A TABLE DATA PARA USAR AQUI E NA CRIACAO DE NOVAS CAT
         self.page.update()
 
     def build(self):
