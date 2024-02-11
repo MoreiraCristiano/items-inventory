@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from model.InventoryItem import Category
 from flet import (
     ListView,
+    Row,
     UserControl,
     View,
     AppBar,
@@ -29,7 +30,6 @@ class ScreenCategories(UserControl):
         self.categories = self.get_distinct_categories()
         self.category = TextField(autofocus=True)
         self.categories_table = DataTable(
-            width=700,
             border_radius=10,
             sort_column_index=0,
             sort_ascending=True,
@@ -39,7 +39,7 @@ class ScreenCategories(UserControl):
             column_spacing=200,
             columns=[DataColumn(Text('Category'))],
         )
-        self.list_view = ListView(expand=1, spacing=10, padding=20)
+        self.list_view = ListView(expand=True)
         self.list_view.controls.append(self.categories_table)
 
         self.dlg = AlertDialog(
@@ -176,13 +176,9 @@ class ScreenCategories(UserControl):
                 print(e)
 
     def delete_category(self, event):
-
-        # Obter os valores da data table que estiverem selecionados
-        # Modal: Deletar selecionados ? Yes / No
-        # If yes delete the selected
-        # dlg_modal_delete_category
         print('deletando as categorias selecionadas . . .')
 
+        # Popular com a categorias que estiverem selecionadas na tabela
         categories = ['teste', 'teste2', 'teste3']
 
         try:
@@ -209,15 +205,9 @@ class ScreenCategories(UserControl):
         Parameters:
         Return: Null
         '''
-        self.generate_category_rows()
-
-        categories_screen = View(
-            '/categories',
-            [
-                AppBar(
-                    title=Text('Categories'),
-                    bgcolor='#1A1C1E',
-                ),
+        header = Row(
+            alignment=MainAxisAlignment.SPACE_EVENLY,
+            controls=[
                 ElevatedButton('Home', on_click=lambda _: self.page.go('/')),
                 ElevatedButton(
                     'New category',
@@ -232,6 +222,19 @@ class ScreenCategories(UserControl):
                         e, self.dlg_modal_delete_category
                     ),
                 ),
+            ],
+        )
+
+        self.generate_category_rows()
+
+        categories_screen = View(
+            '/categories',
+            [
+                AppBar(
+                    title=Text('Categories'),
+                    bgcolor='#1A1C1E',
+                ),
+                header,
                 self.list_view,
             ],
         )
