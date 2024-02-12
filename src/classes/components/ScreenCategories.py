@@ -183,10 +183,12 @@ class ScreenCategories(UserControl):
                 print(e)
 
     def delete_category(self, event):
-        print('deletando as categorias selecionadas . . .')
+        categories = []
 
-        # Popular com a categorias que estiverem selecionadas na tabela
-        categories = ['teste', 'teste2', 'teste3']
+        for row in self.categories_table.rows:
+            if row.selected:
+                for cell in row.cells:
+                    categories.append(cell.content.value)
 
         try:
             with Session(self.engine) as session:
