@@ -1,4 +1,6 @@
 from flet import (
+    Column,
+    MainAxisAlignment,
     UserControl,
     TextField,
     DatePicker,
@@ -20,9 +22,9 @@ class ScreenAddNewItem(UserControl):
     def __init__(self, page, database_engine):
         super().__init__()
         self.page = page
-        self.item = TextField(label='Item')
-        self.category = TextField(label='Category')
-        self.extra_info = TextField(label='Extra information')
+        self.item = TextField(label='Item', icon=icons.CREATE_SHARP)
+        self.category = TextField(label='Category', icon=icons.LABEL)
+        self.extra_info = TextField(label='Extra information', icon=icons.INFO)
         self.btn_home = ElevatedButton(
             'Go Home', on_click=lambda _: self.page.go('/'), height=45
         )
@@ -51,7 +53,7 @@ class ScreenAddNewItem(UserControl):
         Return: Null
         '''
         self.btn_save.disabled = switch
-        self.btn_home.disabled = switch
+        # self.btn_home.disabled = switch
         self.item.disabled = switch
         self.category.disabled = switch
         self.extra_info.disabled = switch
@@ -114,13 +116,17 @@ class ScreenAddNewItem(UserControl):
                     title=Text('Add new item'),
                     bgcolor='#1A1C1E',
                 ),
-                self.item,
-                self.category,
-                self.extra_info,
-                self.date_button,
+                Column(
+                    controls=[
+                        self.item,
+                        self.category,
+                        self.extra_info,
+                        self.date_button,
+                    ],
+                ),
                 Row(
                     alignment='center',
-                    controls=[self.btn_home, self.btn_save],
+                    controls=[self.btn_save],
                 ),
             ],
         )
