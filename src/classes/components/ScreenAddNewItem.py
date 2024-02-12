@@ -95,7 +95,7 @@ class ScreenAddNewItem(UserControl):
                 self.item.value = ''
                 self.category.value = ''
                 self.extra_info.value = ''
-
+                self.date_button.text = 'Expiration date'
                 self.set_controls_disable(False)
 
         except Exception as e:
