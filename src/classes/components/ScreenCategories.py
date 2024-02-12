@@ -208,12 +208,12 @@ class ScreenCategories(UserControl):
         header = Row(
             alignment=MainAxisAlignment.SPACE_EVENLY,
             controls=[
-                ElevatedButton('Home', on_click=lambda _: self.page.go('/')),
                 ElevatedButton(
                     'New category',
                     on_click=lambda e: self.open_dlg_modal(
                         e, self.dlg_modal_new_category
                     ),
+                    icon=icons.CREATE_ROUNDED,
                 ),
                 ElevatedButton(
                     'Delete',
