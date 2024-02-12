@@ -142,8 +142,15 @@ class ScreenCategories(UserControl):
         '''
         Description: Use the category value and save a new category to the database
         Parameters: event: mouse click event
-        Return: Null
+        Return: Null | -1 if input field is empty
         '''
+
+        if self.category.value == '':
+            self.category.error_text = 'Cannot be empty value'
+            self.page.update()
+            self.category.error_text = ''
+            return -1
+
         with Session(self.engine) as session:
             try:
                 category = Category(category=self.category.value)
