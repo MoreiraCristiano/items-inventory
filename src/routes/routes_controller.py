@@ -1,6 +1,7 @@
 import flet as ft
 from classes.components.ScreenAddNewItem import ScreenAddNewItem
 from classes.components.ScreenCategories import ScreenCategories
+from classes.components.ScreenItems import ScreenItems
 
 
 def route_change(route, page, default_view, database_engine):
@@ -21,18 +22,9 @@ def route_change(route, page, default_view, database_engine):
         page.views.append(screen_categories.build())
 
     if page.route == '/my_items':
-        page.views.append(
-            ft.View(
-                '/my_items',
-                [
-                    ft.AppBar(
-                        title=ft.Text('My items'),
-                        bgcolor='#1A1C1E',
-                    ),
-                    ft.ElevatedButton('Go Home', on_click=lambda _: page.go('/')),
-                ],
-            )
-        )
+        screen_my_items = ScreenItems(page, database_engine)
+        page.views.append(screen_my_items.build())
+
     page.update()
 
 
