@@ -10,7 +10,7 @@ from flet import (
 
 BUTTONS_WIDTH = 350
 BUTTONS_HEIGHT = 50
-APP_TITLE = 'INVENTARIO'
+APP_TITLE = ''
 
 
 class Main(UserControl):
