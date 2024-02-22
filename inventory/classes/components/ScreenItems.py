@@ -1,5 +1,10 @@
 from flet import (
     UserControl,
+    ListView,
+    DataTable,
+    DataRow,
+    DataCell,
+    DataColumn,
     FilledButton,
     View,
     AppBar,
@@ -10,7 +15,7 @@ from flet import (
     Row,
     MainAxisAlignment,
 )
-from datetime import datetime
+from datetime import datetime, timedelta
 from model.InventoryItem import InventoryItem
 from sqlalchemy.orm import Session
 
@@ -48,11 +53,53 @@ class ScreenItems(UserControl):
         self.search_btn = FilledButton(
             'Search',
             icon=icons.SEARCH,
-            on_click=lambda e: self.query_items_by_date_interval(e),
+            on_click=lambda e: self.render_items_table(e),
         )
+
+        self.items_table = DataTable(
+            border_radius=10,
+            heading_row_height=70,
+            show_checkbox_column=True,
+            divider_thickness=0,
+            column_spacing=200,
+            columns=[DataColumn(Text('Item')), DataColumn(Text('Expiration'))],
+        )
+        self.list_view = ListView(expand=True, visible=False)
+        self.list_view.controls.append(self.items_table)
 
         page.overlay.append(self.date_picker_from)
         page.overlay.append(self.date_picker_to)
+
+    def render_items_table(self, event):
+        '''
+        Description: Change value of the button used to set the data, to selected data
+        Parameters: event: button click
+        Return: Null
+        '''
+
+        try:
+            date_from = self.date_button_from.text
+            date_to = self.date_button_to.text
+
+            items = self.get_items_by_date_interval(date_from, date_to)
+            if items is not None:
+                print(items)
+                updated_items = []
+                for item in items:
+                    updated_items.append(
+                        DataRow(
+                            [
+                                DataCell(Text(item.item_name)),
+                                DataCell(Text(item.expiration_date.date())),
+                            ],
+                        ),
+                    )
+                    self.items_table.rows = updated_items
+
+                self.list_view.visible = True
+                self.page.update()
+        except Exception:
+            print('Error on render table, no data available')
 
     def change_date_btn_from(self, event):
         '''
@@ -73,22 +120,25 @@ class ScreenItems(UserControl):
         self.date_button_to.text = self.date_picker_to.value.date()
         self.page.update()
 
-    def query_items_by_date_interval(self, event):
+    def get_items_by_date_interval(self, date_from, date_to):
         # Tratar tipo do dado para ser somente a data e nao text do btn cru
         try:
-            date_from = self.date_button_from.text
-            date_to = self.date_button_to.text
 
             with Session(self.engine) as session:
-                query = session.query(InventoryItem).filter(
-                    InventoryItem.expiration_date.between(date_from, date_to)
+                query = (
+                    session.query(InventoryItem)
+                    .filter(
+                        InventoryItem.expiration_date.between(
+                            date_from, date_to + timedelta(days=1)
+                        )
+                    )
+                    .order_by(InventoryItem.expiration_date)
                 )
 
                 if query.count() != 0:
-                    for element in query:
-                        print(element)
+                    return query.all()
                 else:
-                    print('sem dados nessa data')
+                    return 'sem dados nessa data'
         except Exception as e:
             print('Falha ao buscar dados', e)
 
@@ -111,6 +161,7 @@ class ScreenItems(UserControl):
                     alignment=MainAxisAlignment.CENTER,
                     controls=[self.search_btn],
                 ),
+                self.list_view,
             ],
         )
 
