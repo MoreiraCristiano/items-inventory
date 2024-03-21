@@ -8,8 +8,10 @@ import sqlite3
 def main(page: ft.Page):
     try:
         engine = sqlite3.connect("inventory.db")
-        query_create_inventory = "CREATE TABLE inventory (id INTEGER PRIMARY KEY AUTOINCREMENT,item_name TEXT NOT NULL,category TEXT NOT NULL,expiration_date DATETIME NOT NULL,additional_info TEXT NOT NULL);"
-        query_create_category = "CREATE TABLE category (id INTEGER PRIMARY KEY AUTOINCREMENT,category TEXT NOT NULL)"
+        query_create_inventory = "CREATE TABLE inventory (id INT,item_name TEXT NOT NULL,category TEXT NOT NULL,expiration_date DATETIME NOT NULL,additional_info TEXT NOT NULL);"
+        query_create_category = "CREATE TABLE category (id INT,category TEXT NOT NULL)"
+        # query_create_inventory = "CREATE TABLE inventory (id INTEGER PRIMARY KEY AUTOINCREMENT,item_name TEXT NOT NULL,category TEXT NOT NULL,expiration_date DATETIME NOT NULL,additional_info TEXT NOT NULL);"
+        # query_create_category = "CREATE TABLE category (id INTEGER PRIMARY KEY AUTOINCREMENT,category TEXT NOT NULL)"
         engine.execute(query_create_inventory)
         engine.execute(query_create_category)
     except Exception:

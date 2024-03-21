@@ -16,13 +16,14 @@ from flet import (
     DataRow,
     icons,
 )
+import sqlite3
 
 
 class ScreenCategories(UserControl):
     def __init__(self, page, database_engine):
         super().__init__()
         self.page = page
-        self.engine = database_engine
+        self.engine = sqlite3.connect("inventory.db")
 
         self.categories = self.get_distinct_categories()
         self.category = TextField(autofocus=True)
@@ -148,22 +149,21 @@ class ScreenCategories(UserControl):
             self.category.error_text = ''
             return -1
 
-        with Session(self.engine) as session:
-            try:
-                category = Category(category=self.category.value)
+        try:
+            category = self.category.value
+            query_save_category = f"INSERT INTO category VALUES (2, '{category}')"
+            self.engine.execute(query_save_category)
 
-                session.expire_on_commit = False
-                session.add(category)
-                session.commit()
+            self.close_dlg(event, self.dlg_modal_new_category)
+            self.category.value = ''
 
-                self.close_dlg(event, self.dlg_modal_new_category)
-                self.category.value = ''
+            self.engine.commit()
 
-                self.update_category_table_values()
+            self.update_category_table_values()
 
-            except Exception as e:
-                print(e)
-                print('Falha ao criar categoria, tratar')
+        except Exception as e:
+            print(e)
+            print('Falha ao criar categoria, tratar')
 
     def get_distinct_categories(self):
         '''
@@ -172,13 +172,17 @@ class ScreenCategories(UserControl):
         Return: List of categories | None
         '''
 
-        # try:
-        #     stmt = select(Category.category)
-        #     categories = list(session.scalars(stmt))
-        #     return categories
-        # except Exception as e:
-        #     print(e)
-        return ['cat1', 'cat2']
+        try:
+            query_get_distinct_categories = "SELECT DISTINCT category FROM category"
+            categories = self.engine.execute(query_get_distinct_categories).fetchall()
+            categories_list = []
+
+            for category in categories:
+                categories_list.append(category[0])
+
+            return categories_list
+        except Exception as e:
+            print(e)
 
     def delete_category(self, event):
         categories = []
@@ -189,17 +193,16 @@ class ScreenCategories(UserControl):
                     categories.append(cell.content.value)
 
         try:
-            with Session(self.engine) as session:
-                session.expire_on_commit = False
+            for category in categories:
+                query_delete_category = (
+                    f"DELETE FROM category WHERE category='{category}'"
+                )
+                self.engine.execute(query_delete_category)
 
-                for category in categories:
-                    stmt = delete(Category).where(Category.category == category)
-                    session.execute(stmt)
+            self.engine.commit()
 
-                session.commit()
-
-                self.close_dlg(event, self.dlg_modal_delete_category)
-                self.update_category_table_values()
+            self.close_dlg(event, self.dlg_modal_delete_category)
+            self.update_category_table_values()
         except Exception as e:
             print(e)
             print('Erro ao deletar')
