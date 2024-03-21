@@ -22,7 +22,8 @@ class ScreenAddNewItem(UserControl):
     def __init__(self, page, database_engine):
         super().__init__()
         self.page = page
-        self.engine = sqlite3.connect("inventory.db")
+        self.engine = sqlite3.connect('inventory.db')
+        
         self.categories_instance = ScreenCategories(page, database_engine)
         self.item = TextField(label='Item', icon=icons.CREATE_SHARP)
         self.category = Dropdown(
@@ -83,10 +84,10 @@ class ScreenAddNewItem(UserControl):
         '''
         try:
             new_item = {
-                "item_name": self.item.value,
-                "category": self.category.value,
-                "expiration_date": self.date_picker.value.date(),
-                "additional_info": self.extra_info.value,
+                'item_name': self.item.value,
+                'category': self.category.value,
+                'expiration_date': self.date_picker.value.date(),
+                'additional_info': self.extra_info.value,
             }
 
             # Todo: Fix autoincrement ID
