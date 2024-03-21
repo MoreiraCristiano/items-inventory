@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sqlalchemy = "*"
 flet = "*"
 python-for-android = {ref = "3.11.6", git = "git+https://github.com/flet-dev/python-for-android.git"}
 cython = "*"

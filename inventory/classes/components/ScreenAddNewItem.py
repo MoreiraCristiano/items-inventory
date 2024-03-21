@@ -14,17 +14,15 @@ from flet import (
 )
 
 
-from sqlalchemy.orm import Session
 from datetime import datetime
-from model.InventoryItem import InventoryItem
 from .ScreenCategories import ScreenCategories
-
+import sqlite3
 
 class ScreenAddNewItem(UserControl):
     def __init__(self, page, database_engine):
         super().__init__()
         self.page = page
-        self.engine = database_engine
+        self.engine = sqlite3.connect("inventory.db")
         self.categories_instance = ScreenCategories(page, database_engine)
         self.item = TextField(label='Item', icon=icons.CREATE_SHARP)
         self.category = Dropdown(
@@ -84,30 +82,31 @@ class ScreenAddNewItem(UserControl):
         Return:
         '''
         try:
-            with Session(self.engine) as session:
+            new_item = {
+                "item_name": self.item.value,
+                "category": self.category.value,
+                "expiration_date": self.date_picker.value.date(),
+                "additional_info": self.extra_info.value,
+            }
 
-                new_item = InventoryItem(
-                    item_name=self.item.value,
-                    category=self.category.value,
-                    expiration_date=self.date_picker.value.date(),
-                    additional_info=self.extra_info.value,
-                )
+            # Todo: Fix autoincrement ID
+            query_add_new_item = f"INSERT INTO inventory VALUES (1,'{new_item["item_name"]}', '{new_item["category"]}', '{new_item["expiration_date"]}', '{new_item["additional_info"]}');"
+            print(query_add_new_item)
+            self.engine.execute(query_add_new_item)
 
-                self.set_controls_disable(True)
 
-                session.expire_on_commit = False
-                session.add(new_item)
-                session.commit()
+            self.set_controls_disable(True)
 
-                self.item.value = ''
-                self.category.value = ''
-                self.extra_info.value = ''
-                self.date_button.text = 'Expiration date'
-                self.set_controls_disable(False)
-
+            self.item.value = ''
+            self.category.value = ''
+            self.extra_info.value = ''
+            self.date_button.text = 'Expiration date'
+            self.set_controls_disable(False)
+            
+            self.engine.commit()
         except Exception as e:
             self.set_controls_disable(False)
-            print('Algum erro ao inserir novo item. TRATAR')
+            print('Algum erro ao inserir novo item. TRATAR', e)
             print(e)
 
     def build(self):

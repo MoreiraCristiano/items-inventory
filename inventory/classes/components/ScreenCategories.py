@@ -1,6 +1,3 @@
-from sqlalchemy import select, delete
-from sqlalchemy.orm import Session
-from model.InventoryItem import Category
 from flet import (
     ListView,
     Row,
@@ -174,13 +171,14 @@ class ScreenCategories(UserControl):
         Parameters: Null
         Return: List of categories | None
         '''
-        with Session(self.engine) as session:
-            try:
-                stmt = select(Category.category)
-                categories = list(session.scalars(stmt))
-                return categories
-            except Exception as e:
-                print(e)
+
+        # try:
+        #     stmt = select(Category.category)
+        #     categories = list(session.scalars(stmt))
+        #     return categories
+        # except Exception as e:
+        #     print(e)
+        return ['cat1', 'cat2']
 
     def delete_category(self, event):
         categories = []

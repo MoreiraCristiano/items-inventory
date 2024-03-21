@@ -16,8 +16,6 @@ from flet import (
     MainAxisAlignment,
 )
 from datetime import datetime, timedelta
-from model.InventoryItem import InventoryItem
-from sqlalchemy.orm import Session
 
 
 class ScreenItems(UserControl):
