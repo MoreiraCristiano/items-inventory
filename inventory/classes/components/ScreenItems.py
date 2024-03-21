@@ -16,13 +16,14 @@ from flet import (
     MainAxisAlignment,
 )
 from datetime import datetime, timedelta
+import sqlite3
 
 
 class ScreenItems(UserControl):
     def __init__(self, page, database_engine):
         super().__init__()
         self.page = page
-        self.engine = database_engine
+        self.engine = sqlite3.connect("inventory.db")
 
         self.date_picker_from = DatePicker(
             on_change=self.change_date_btn_from,
@@ -80,15 +81,17 @@ class ScreenItems(UserControl):
             date_to = self.date_button_to.text
 
             items = self.get_items_by_date_interval(date_from, date_to)
+
             if items is not None:
-                print(items)
                 updated_items = []
                 for item in items:
+                    print(item[0])
+                    print(item[1])
                     updated_items.append(
                         DataRow(
                             [
-                                DataCell(Text(item.item_name)),
-                                DataCell(Text(item.expiration_date.date())),
+                                DataCell(Text(item[0])),
+                                DataCell(Text(item[1])),
                             ],
                         ),
                     )
@@ -121,22 +124,11 @@ class ScreenItems(UserControl):
     def get_items_by_date_interval(self, date_from, date_to):
         # Tratar tipo do dado para ser somente a data e nao text do btn cru
         try:
+            query_filter_by_expiration = f"SELECT item_name, expiration_date FROM inventory WHERE expiration_date BETWEEN '{date_from}' AND '{date_to + timedelta(days=1)}' ORDER BY expiration_date"
+            items = self.engine.execute(query_filter_by_expiration).fetchall()
 
-            with Session(self.engine) as session:
-                query = (
-                    session.query(InventoryItem)
-                    .filter(
-                        InventoryItem.expiration_date.between(
-                            date_from, date_to + timedelta(days=1)
-                        )
-                    )
-                    .order_by(InventoryItem.expiration_date)
-                )
+            return items
 
-                if query.count() != 0:
-                    return query.all()
-                else:
-                    return 'sem dados nessa data'
         except Exception as e:
             print('Falha ao buscar dados', e)
 
